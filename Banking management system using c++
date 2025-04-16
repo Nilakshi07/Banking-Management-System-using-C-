@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <limits> // Needed for numeric_limits
 using namespace std;
 
 class BankAccount {
@@ -42,7 +43,7 @@ void createAccount() {
     double initialAmount;
 
     cout << "Enter Name: ";
-    cin.ignore(); // To clear the buffer before getline
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Properly clear input buffer
     getline(cin, name);
 
     cout << "Enter Address: ";
@@ -133,7 +134,7 @@ int main() {
     int choice;
 
     while (true) {
-        cout << "Select an option:" << endl;
+        cout << "\n====== Bank Management System ======\n";
         cout << "1. Create New Account" << endl;
         cout << "2. Withdraw Amount" << endl;
         cout << "3. Insert Amount" << endl;
@@ -160,6 +161,7 @@ int main() {
                 deleteAccount();
                 break;
             case 6:
+                cout << "Exiting... Thank you!" << endl;
                 return 0;
             default:
                 cout << "Invalid choice, please try again." << endl;
