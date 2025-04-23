@@ -1,0 +1,335 @@
+HTML
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bank Management System</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container card" id="login-section">
+    <h2>🔐 Bank Login</h2>
+    <input type="text" id="username" placeholder="👤 Username" />
+    <input type="password" id="password" placeholder="🔑 Password" />
+    <button class="btn primary" onclick="login()">Login</button>
+    <p id="login-msg" class="error-msg"></p>
+  </div>
+
+  <div class="container hidden card" id="dashboard-section">
+    <h2>👋 Welcome, <span id="user-name"></span></h2>
+    <p><strong>Account No:</strong> <span id="account-no"></span></p>
+    <p><strong>Current Balance:</strong> $<span id="balance"></span></p>
+
+    <div class="section">
+      <h3>💸 Transfer Money</h3>
+      <select id="recipient-select"></select>
+      <input type="number" id="transfer-amount" placeholder="💰 Amount" />
+      <button class="btn success" onclick="transferMoney()">Transfer</button>
+      <p id="transfer-msg" class="success-msg"></p>
+    </div>
+
+    <div class="section">
+      <h3>📥 Deposit</h3>
+      <input type="number" id="deposit-amount" placeholder="💰 Amount" />
+      <button class="btn info" onclick="depositMoney()">Deposit</button>
+      <p id="deposit-msg" class="success-msg"></p>
+    </div>
+
+    <div class="section">
+      <h3>📤 Withdraw</h3>
+      <input type="number" id="withdraw-amount" placeholder="💰 Amount" />
+      <button class="btn warning" onclick="withdrawMoney()">Withdraw</button>
+      <p id="withdraw-msg" class="success-msg"></p>
+    </div>
+
+    <div class="section">
+      <h3>📜 Passbook</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>To/From</th>
+            <th>Balance</th>
+          </tr>
+        </thead>
+        <tbody id="passbook"></tbody>
+      </table>
+    </div>
+
+    <button class="btn danger" onclick="logout()">🚪 Logout</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+
+CSS 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to right, #667eea, #764ba2);
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+  }
+  
+  .container {
+    width: 100%;
+    max-width: 700px;
+  }
+  
+  .card {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+  }
+  
+  h2, h3 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  input, select {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  
+  button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  
+  .btn {
+    transition: background 0.3s;
+  }
+  
+  .primary {
+    background-color: #4c51bf;
+    color: white;
+  }
+  
+  .primary:hover {
+    background-color: #434190;
+  }
+  
+  .success {
+    background-color: #38a169;
+    color: white;
+  }
+  
+  .success:hover {
+    background-color: #2f855a;
+  }
+  
+  .info {
+    background-color: #3182ce;
+    color: white;
+  }
+  
+  .info:hover {
+    background-color: #2b6cb0;
+  }
+  
+  .warning {
+    background-color: #dd6b20;
+    color: white;
+  }
+  
+  .warning:hover {
+    background-color: #c05621;
+  }
+  
+  .danger {
+    background-color: #e53e3e;
+    color: white;
+  }
+  
+  .danger:hover {
+    background-color: #c53030;
+  }
+  
+  .error-msg {
+    color: #e53e3e;
+    text-align: center;
+  }
+  
+  .success-msg {
+    color: #38a169;
+    text-align: center;
+  }
+  
+  .section {
+    margin: 30px 0;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #f9f9f9;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+  }
+  
+  th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  thead {
+    background-color: #4c51bf;
+    color: white;
+  }
+  
+  .hidden {
+    display: none;
+  }
+
+
+JAVASCRIPT
+const users = [
+    { username: 'john', password: '123', name: 'John Doe', accountNo: '1001', balance: 5000, transactions: [] },
+    { username: 'jane', password: '123', name: 'Jane Smith', accountNo: '1002', balance: 6000, transactions: [] },
+    { username: 'alex', password: '123', name: 'Alex Kim', accountNo: '1003', balance: 7000, transactions: [] },
+    { username: 'emma', password: '123', name: 'Emma Brown', accountNo: '1004', balance: 8000, transactions: [] },
+    { username: 'mike', password: '123', name: 'Mike Lee', accountNo: '1005', balance: 9000, transactions: [] }
+  ];
+  
+  let currentUser = null;
+  
+  function login() {
+    const uname = document.getElementById('username').value;
+    const pword = document.getElementById('password').value;
+    const user = users.find(u => u.username === uname && u.password === pword);
+    if (user) {
+      currentUser = user;
+      showDashboard();
+    } else {
+      document.getElementById('login-msg').innerText = 'Invalid credentials!';
+    }
+  }
+  
+  function showDashboard() {
+    document.getElementById('login-section').classList.add('hidden');
+    document.getElementById('dashboard-section').classList.remove('hidden');
+    document.getElementById('user-name').innerText = currentUser.name;
+    document.getElementById('account-no').innerText = currentUser.accountNo;
+    document.getElementById('balance').innerText = currentUser.balance;
+    populateRecipients();
+    showPassbook();
+  }
+  
+  function populateRecipients() {
+    const select = document.getElementById('recipient-select');
+    select.innerHTML = '';
+    users.forEach(u => {
+      if (u.username !== currentUser.username) {
+        const opt = document.createElement('option');
+        opt.value = u.username;
+        opt.text = ${u.name} (${u.accountNo});
+        select.appendChild(opt);
+      }
+    });
+  }
+  
+  function transferMoney() {
+    const recipientUsername = document.getElementById('recipient-select').value;
+    const amount = parseFloat(document.getElementById('transfer-amount').value);
+    const recipient = users.find(u => u.username === recipientUsername);
+  
+    if (!amount || amount <= 0 || amount > currentUser.balance) {
+      document.getElementById('transfer-msg').innerText = 'Invalid amount!';
+      return;
+    }
+  
+    currentUser.balance -= amount;
+    recipient.balance += amount;
+    const now = new Date().toLocaleString();
+  
+    currentUser.transactions.push({ date: now, type: 'Debit', amount, target: recipient.name, balance: currentUser.balance });
+    recipient.transactions.push({ date: now, type: 'Credit', amount, target: currentUser.name, balance: recipient.balance });
+  
+    document.getElementById('balance').innerText = currentUser.balance;
+    document.getElementById('transfer-msg').innerText = 'Transfer successful!';
+    document.getElementById('transfer-amount').value = '';
+    showPassbook();
+  }
+  
+  function depositMoney() {
+    const amount = parseFloat(document.getElementById('deposit-amount').value);
+    if (!amount || amount <= 0) {
+      document.getElementById('deposit-msg').innerText = 'Invalid amount!';
+      return;
+    }
+  
+    currentUser.balance += amount;
+    const now = new Date().toLocaleString();
+    currentUser.transactions.push({ date: now, type: 'Credit', amount, target: 'Self Deposit', balance: currentUser.balance });
+  
+    document.getElementById('balance').innerText = currentUser.balance;
+    document.getElementById('deposit-msg').innerText = 'Deposit successful!';
+    document.getElementById('deposit-amount').value = '';
+    showPassbook();
+  }
+  
+  function withdrawMoney() {
+    const amount = parseFloat(document.getElementById('withdraw-amount').value);
+    if (!amount || amount <= 0 || amount > currentUser.balance) {
+      document.getElementById('withdraw-msg').innerText = 'Invalid amount!';
+      return;
+    }
+  
+    currentUser.balance -= amount;
+    const now = new Date().toLocaleString();
+    currentUser.transactions.push({ date: now, type: 'Debit', amount, target: 'Self Withdraw', balance: currentUser.balance });
+  
+    document.getElementById('balance').innerText = currentUser.balance;
+    document.getElementById('withdraw-msg').innerText = 'Withdraw successful!';
+    document.getElementById('withdraw-amount').value = '';
+    showPassbook();
+  }
+  
+  function showPassbook() {
+    const passbook = document.getElementById('passbook');
+    passbook.innerHTML = '';
+    currentUser.transactions.forEach(t => {
+      const row = <tr><td>${t.date}</td><td>${t.type}</td><td>$${t.amount}</td><td>${t.target}</td><td>$${t.balance}</td></tr>;
+      passbook.innerHTML += row;
+    });
+  }
+  
+  function logout() {
+    currentUser = null;
+    document.getElementById('login-section').classList.remove('hidden');
+    document.getElementById('dashboard-section').classList.add('hidden');
+    document.getElementById('username').value = '';
+    document.getElementById('password').value = '';
+    document.getElementById('login-msg').innerText = '';
+  }
